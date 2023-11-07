@@ -3,11 +3,13 @@ const Schema = mongoose.Schema;
 
 const schema = new Schema(
   {
-    count_student: [
-      { type: Schema.Types.ObjectId, ref: "Accounts", required: true },
-    ],
+    student_id: {
+      type: Schema.Types.ObjectId,
+      ref: "accounts",
+      required: true,
+    },
     room_id: { type: Schema.Types.ObjectId, ref: "Rooms", required: true },
-    user_id: { type: Schema.Types.ObjectId, ref: "Accounts", required: true },
+    user_id: { type: Schema.Types.ObjectId, ref: "accounts", required: true },
     date_start: { type: String, required: true },
     date_end: { type: String, required: true },
     method_payment: { type: String, required: true },

@@ -7,11 +7,11 @@ const ReportRouter = require("./Report");
 
 function route(app) {
   app.use("/api/auth", AuthRouter);
-  app.use("/api/rooms", BillEWRouter);
-  app.use("/api/services", RoomRouter);
-  app.use("/api/contract", ServiceRouter);
+  app.use("/api/rooms", RoomRouter);
+  app.use("/api/services", ServiceRouter);
+  app.use("/api/contract", ContractRouter);
   app.use("/api/report", ReportRouter);
-  app.use("/api/bill-electric-water", ContractRouter);
+  app.use("/api/bill-electric-water", BillEWRouter);
 
   app.use("/", function (req, res, next) {
     res.send({ Error: "NOT FOUND" });

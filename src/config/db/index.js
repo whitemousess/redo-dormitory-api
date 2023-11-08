@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 async function connect() {
   try {
     await mongoose.connect(
-      "mongodb://localhost:27017/dormitory"
+      "mongodb+srv://chuotbach:Tnt%402002@chuotbach.36qa5fh.mongodb.net/dormitory"
     );
     console.log("Connect successfully");
   } catch (error) {

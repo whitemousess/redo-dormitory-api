@@ -1,16 +1,26 @@
 const RoomModel = require("../models/Room.model");
+const ContractModel = require("../models/Contract.model");
 
 module.exports = {
   getManagerRoom(req, res, next) {
     RoomModel.find()
-      .populate("user_id")
+      .populate(["user_id", "count_student.student_id"])
       .then((rooms) => res.json({ data: rooms }))
       .catch((err) => res.json({ error: err }));
   },
 
+  getRoomStudent(req, res, next) {
+    ContractModel.findOne({ student_id: req.user.id, liquidation: 0 }).then(
+      (rooms) =>
+        RoomModel.findById(rooms.room_id)
+          .then((rooms) => res.json({ data: rooms.count_student }))
+          .catch((err) => res.json({ error: err }))
+    );
+  },
+
   getRoomById(req, res, next) {
     RoomModel.findOne({ _id: req.params.id })
-      .populate("user_id")
+      .populate(["user_id"])
       .then((rooms) => res.json({ data: rooms }))
       .catch((err) => res.json({ error: err }));
   },

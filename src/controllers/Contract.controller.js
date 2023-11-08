@@ -18,29 +18,21 @@ module.exports = {
 
   getLiquidation(req, res, next) {
     ContractModel.find({ liquidation: 1 })
+      .populate(["student_id", "room_id", "user_id"])
       .then((contractLiq) => {
-        if (contractLiq.length === 0) res.status(404).json("Contract is found");
-        else res.json({ data: contractLiq });
+        res.json({ data: contractLiq });
       })
       .catch((err) => res.json(err));
   },
 
   deleteContract(req, res, next) {
-    ContractModel.findOneAndDelete({ _id: req.params.id })
-      .then((result) =>
-        RoomModel.findOneAndUpdate(
-          { _id: result.room_id },
-          {
-            $pull: {
-              count_student: { student_id: result.student_id },
-            },
-          }
-        ).then(res.json({ data: result }))
-      )
+    ContractModel.findOneAndDelete({ _id: req.params.id }, { new: true })
+      .then((result) => res.json(result))
       .catch((err) => res.json(err));
   },
 
   createContract(req, res, next) {
+    req.body.user_id = req.user.id;
     const contract = new ContractModel(req.body);
     contract
       .save()
@@ -58,7 +50,16 @@ module.exports = {
     ContractModel.findOneAndUpdate({ _id: req.params.id }, req.body, {
       new: true,
     })
-      .then((contract) => res.json({ data: contract }))
-      .catch((err) => res.json(err));
+      .then((result) =>
+        RoomModel.findOneAndUpdate(
+          { _id: result.room_id },
+          {
+            $pull: {
+              count_student: { student_id: result.student_id },
+            },
+          }
+        ).then(res.json({ data: result }))
+      )
+      .catch((err) => res.json({ message: err }));
   },
 };

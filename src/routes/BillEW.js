@@ -1,14 +1,31 @@
 const express = require("express");
 const router = express.Router();
 
-const BillEWController = require('../controllers/BillEW.controller');
+const {
+  verifyToken,
+  verifyTokenAndAdmin,
+} = require("../middleware/CheckLogin");
+const BillEWController = require("../controllers/BillEW.controller");
 
-router.get('/get-all-electric',BillEWController.getAllElectric)
-router.get('/get-electric-room',BillEWController.getElectricRoom)
-router.get('/get-one-electric',BillEWController.getOneElectric)
+router.get(
+  "/get-all-electric",
+  verifyTokenAndAdmin,
+  BillEWController.getAllElectric
+);
+router.get("/get-electric-room", verifyToken, BillEWController.getElectricRoom);
+router.get(
+  "/get-one-electric",
+  verifyTokenAndAdmin,
+  BillEWController.getOneElectric
+);
 
-router.put('/:id/create-bill',BillEWController.createBill)
-router.put('/delete-bill',BillEWController.deleteBill)
-router.put('/edit-bill',BillEWController.editBill)
+router.put(
+  "/:id/create-bill",
+  verifyTokenAndAdmin,
+  BillEWController.createBill
+);
+
+router.get("/delete-bill", verifyTokenAndAdmin, BillEWController.deleteBill);
+router.put("/edit-bill", verifyToken, BillEWController.editBill);
 
 module.exports = router;

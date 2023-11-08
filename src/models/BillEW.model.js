@@ -12,7 +12,6 @@ const schema = new Schema(
     price_per_w: { type: Number, required: true },
     date_start: { type: String, required: true },
     date_end: { type: String, required: true },
-    method_payment: { type: String },
     status: { type: Number, required: true, default: 0 },
   },
   {

@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const schema = new Schema(
   {
-    user_id: { type: Number, unique: true, default: 20000 },
+    user_id: { type: Number, default: 20000 },
     username: { type: String, require: true, unique: true },
     password: { type: String, required: true },
     fullName: { type: String, required: true },
@@ -13,8 +13,8 @@ const schema = new Schema(
     address: { type: String },
     report: [
       {
-        title: { type: String},
-        description: { type: String},
+        title: { type: String },
+        description: { type: String },
         status: { type: Number, default: 0 },
       },
     ],

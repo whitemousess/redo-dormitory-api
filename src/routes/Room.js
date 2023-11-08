@@ -2,12 +2,25 @@ const express = require("express");
 const router = express.Router();
 
 const RoomController = require("../controllers/Room.controller");
+const {
+  verifyToken,
+  verifyTokenAndAdmin,
+} = require("../middleware/CheckLogin");
 
-router.get("/get-manager-room", RoomController.getManagerRoom)
-router.get("/:id/get-room", RoomController.getRoomById);
+router.get(
+  "/get-manager-room",
+  verifyTokenAndAdmin,
+  RoomController.getManagerRoom
+);
+router.get("/get-student-room", verifyToken, RoomController.getRoomStudent);
+router.get("/:id/get-room", verifyTokenAndAdmin, RoomController.getRoomById);
 
-router.post("/create-room", RoomController.createRoom);
-router.put("/:id/edit-room", RoomController.editRoom);
-router.delete("/:id/delete-room", RoomController.deleteRoom);
+router.post("/create-room", verifyTokenAndAdmin, RoomController.createRoom);
+router.put("/:id/edit-room", verifyTokenAndAdmin, RoomController.editRoom);
+router.delete(
+  "/:id/delete-room",
+  verifyTokenAndAdmin,
+  RoomController.deleteRoom
+);
 
 module.exports = router;

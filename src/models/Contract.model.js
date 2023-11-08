@@ -12,7 +12,6 @@ const schema = new Schema(
     user_id: { type: Schema.Types.ObjectId, ref: "accounts", required: true },
     date_start: { type: String, required: true },
     date_end: { type: String, required: true },
-    method_payment: { type: String, required: true },
     status: { type: Number, required: true, default: 0 },
     liquidation: { type: Number, required: true, default: 0 },
   },

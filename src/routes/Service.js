@@ -1,13 +1,30 @@
 const express = require("express");
 const router = express.Router();
 
-const ServiceController = require('../controllers/Service.controller');
+const ServiceController = require("../controllers/Service.controller");
+const { verifyTokenAndAdmin } = require("../middleware/CheckLogin");
 
-router.get('/get-all-service', ServiceController.getAllService);
-router.get('/:id/get-service', ServiceController.getService);
-router.post('/create-service', ServiceController.createService);
+router.get(
+  "/get-all-service",
+  verifyTokenAndAdmin,
+  ServiceController.getAllService
+);
+router.get(
+  "/:id/get-service",
+  verifyTokenAndAdmin,
+  ServiceController.getService
+);
+router.post(
+  "/create-service",
+  verifyTokenAndAdmin,
+  ServiceController.createService
+);
 
-router.delete('/:id/delete', ServiceController.deleteService);
-router.put('/:id/edit', ServiceController.editService);
+router.delete(
+  "/:id/delete",
+  verifyTokenAndAdmin,
+  ServiceController.deleteService
+);
+router.put("/:id/edit", verifyTokenAndAdmin, ServiceController.editService);
 
 module.exports = router;

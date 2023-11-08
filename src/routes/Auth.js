@@ -3,13 +3,13 @@ const router = express.Router();
 
 const AuthControllers = require("../controllers/Auth.controller");
 const {
-  verifyTokenAndAuthorization,
   verifyTokenAndAdmin,
+  verifyToken,
 } = require("../middleware/CheckLogin");
 const upload = require("../middleware/upload");
 
 router.post(
-  "/create-user",
+  "/create-user",verifyTokenAndAdmin,
   upload.single("avatar"),
   AuthControllers.createUser
 );
@@ -20,14 +20,18 @@ router.delete(
 );
 router.put(
   "/edit-current-user",
-  verifyTokenAndAuthorization,
+  verifyToken,
   upload.single("avatar"),
   AuthControllers.editCurrentUser
 );
 
-router.get("/get-current", verifyTokenAndAuthorization, AuthControllers.getCurrent);
+router.get("/get-current", verifyToken, AuthControllers.getCurrent);
 router.get("/get-all-users", verifyTokenAndAdmin, AuthControllers.getAllUsers),
-router.get("/:id/get-current", verifyTokenAndAdmin, AuthControllers.getCurrentById);
+  router.get(
+    "/:id/get-current",
+    verifyTokenAndAdmin,
+    AuthControllers.getCurrentById
+  );
 router.put(
   "/:id/edit",
   verifyTokenAndAdmin,

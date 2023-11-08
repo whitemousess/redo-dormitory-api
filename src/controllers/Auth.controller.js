@@ -74,7 +74,7 @@ module.exports = {
           } else {
             req.body.avatarUrl = req.file.path;
           }
-          req.body.role = true
+          req.body.role = true;
           const handlePassword = CryptoJS.AES.encrypt(
             req.body.password,
             process.env.ACCESS_TOKEN
@@ -104,23 +104,26 @@ module.exports = {
             auth.password,
             process.env.ACCESS_TOKEN
           ).toString(CryptoJS.enc.Utf8);
-          hashedPassword !== req.body.password && res.sendStatus(401);
+          
+          if (hashedPassword !== req.body.password) {
+            res.status(401).json({ message: "Invalid password" });
+          } else {
+            const accessToken = jwt.sign(
+              {
+                id: auth._id,
+                isAdmin: auth.role,
+              },
+              process.env.ACCESS_TOKEN,
+              { expiresIn: "3d" }
+            );
 
-          const accessToken = jwt.sign(
-            {
-              id: auth._id,
-              isAdmin: auth.role,
-            },
-            process.env.ACCESS_TOKEN,
-            { expiresIn: "3d" }
-          );
-
-          const { ...other } = auth._doc;
-          res.status(200).json({ ...other, token: accessToken });
+            const { ...other } = auth._doc;
+            res.status(200).json({ ...other, token: accessToken });
+          }
         }
       })
       .catch((err) => {
-        res.status(500).json({ message: err });
+        res.sendStatus(500);
       });
   },
 
@@ -172,11 +175,19 @@ module.exports = {
         req.body.avatarUrl = req.file.path;
       }
 
-      const handlePassword = CryptoJS.AES.encrypt(
-        req.body.password,
-        process.env.ACCESS_TOKEN
-      ).toString();
-      req.body.password = handlePassword;
+      if (!req.body.password) {
+        const hashedPassword = CryptoJS.AES.decrypt(
+          user.password,
+          process.env.ACCESS_TOKEN
+        ).toString(CryptoJS.enc.Utf8);
+        req.body.password = hashedPassword;
+      } else {
+        const handlePassword = CryptoJS.AES.encrypt(
+          req.body.password,
+          process.env.ACCESS_TOKEN
+        ).toString();
+        req.body.password = handlePassword;
+      }
 
       AuthModel.findOneAndUpdate({ _id: req.user.id }, req.body)
         .then((student) => {
@@ -205,13 +216,21 @@ module.exports = {
         req.body.avatarUrl = req.file.path;
       }
 
-      const handlePassword = CryptoJS.AES.encrypt(
-        req.body.password,
-        process.env.ACCESS_TOKEN
-      ).toString();
-      req.body.password = handlePassword;
+      if (req.body.password === user.password) {
+        const handlePassword = CryptoJS.AES.encrypt(
+          req.body.password,
+          process.env.ACCESS_TOKEN
+        ).toString();
+        req.body.password = handlePassword;
+      } else {
+        const hashedPassword = CryptoJS.AES.decrypt(
+          user.password,
+          process.env.ACCESS_TOKEN
+        ).toString(CryptoJS.enc.Utf8);
+        req.body.password = hashedPassword;
+      }
 
-      AuthModel.findOneAndUpdate({ _id: req.params.id }, req.body)
+      AuthModel.findByIdAndUpdate({ _id: req.params.id }, req.body)
         .then((student) => {
           res.json({ data: student });
         })

@@ -73,4 +73,14 @@ module.exports = {
 
     res.json({ data: reports });
   },
+
+  getReportInStudent(req, res, next) {
+    AuthModel.findById(req.user.id)
+      .then((user) => {
+        res.json({ data: user.report });
+      })
+      .catch((err) => {
+        res.json({ data: err });
+      });
+  },
 };

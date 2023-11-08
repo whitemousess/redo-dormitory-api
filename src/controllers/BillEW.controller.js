@@ -1,4 +1,5 @@
 const RoomModel = require("../models/Room.model");
+const ContractModel = require("../models/Contract.model");
 
 module.exports = {
   createBill(req, res, next) {
@@ -20,8 +21,10 @@ module.exports = {
 
       if (billEW && billEW.length > 0) {
         const billRoom = {
-          room_name: room.room_name,
           bill_electric_water: billEW.map((bill) => ({
+            id: bill._id,
+            room_name: room.room_name,
+            room_id: room._id,
             e_first: bill.e_first,
             e_last: bill.e_last,
             price_per_e: bill.price_per_e,
@@ -30,7 +33,6 @@ module.exports = {
             price_per_w: bill.price_per_w,
             date_start: bill.date_start,
             date_end: bill.date_end,
-            method_payment: bill.method_payment,
             status: bill.status,
           })),
         };
@@ -42,7 +44,15 @@ module.exports = {
     res.json({ data: bills });
   },
 
-  getElectricRoom(req, res, next) {},
+  getElectricRoom(req, res, next) {
+    ContractModel.findOne({ student_id: req.user.id, liquidation: 0 })
+      .then((bill) =>
+        RoomModel.findById(bill.room_id).then((room) =>
+          res.json({ data: room })
+        )
+      )
+      .catch((err) => res.json({ data: err }));
+  },
 
   getOneElectric(req, res, next) {
     const room_id = req.query.room_id;
@@ -99,7 +109,6 @@ module.exports = {
           "Bill_Electric_Water.$.price_per_w": req.body.price_per_w,
           "Bill_Electric_Water.$.date_start": req.body.date_start,
           "Bill_Electric_Water.$.date_end": req.body.date_end,
-          "Bill_Electric_Water.$.method_payment": req.body.method_payment,
           "Bill_Electric_Water.$.status": req.body.status,
         },
       },

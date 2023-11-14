@@ -1,27 +1,21 @@
-const express = require('express');
-const bodyParser = require('body-parser')
-const cors = require('cors');
-const db = require('./config/db')
-const route = require('./routes');
+const express = require("express");
+const bodyParser = require("body-parser");
+var cors = require("cors");
+require("dotenv").config();
 const cookieParser = require("cookie-parser");
-const dotenv = require("dotenv");
-dotenv.config();
 
-const app = express();
-const port = 1407;
+const route = require("./routes");
+const db = require("./config/db");
 
 db.connect();
-
+const app = express();
 app.use(cors());
-// for parsing application/json
-app.use(bodyParser.json());   
-// for parsing application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: true })); 
-// read token in cookie
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 route(app);
 
-app.listen(port, () =>
-  console.log(`app listening at http://localhost:${port}`)
-);
+app.listen(1407, () => {
+  console.log("server listening on 1407");
+});

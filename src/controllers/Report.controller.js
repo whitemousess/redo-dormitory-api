@@ -1,28 +1,40 @@
+const ReportModel = require("../models/Report.model");
 const AuthModel = require("../models/Account.model");
 
 module.exports = {
   createReport(req, res, next) {
-    AuthModel.findOneAndUpdate(
-      { _id: req.user.id },
-      { $push: { report: req.body } },
-      { new: true }
-    ).then((report) => {
-      res.json({ data: report });
-    });
+    req.body.user_id = req.user.id;
+    const report = new ReportModel(req.body);
+    report
+      .save()
+      .then((report) => {
+        AuthModel.findOneAndUpdate(
+          { _id: req.user.id },
+          { $push: { reports: { report_id: report._id } } },
+          { new: true }
+        ).then((auth) => {
+          res.json({ data: report });
+        });
+      })
+      .catch((error) => {
+        res.json({ error: error });
+      });
   },
 
   deleteReport(req, res, next) {
-    AuthModel.findOneAndUpdate(
-      {
-        _id: req.user.id,
-      },
-      {
-        $pull: { report: { _id: req.params.id } },
-      },
-      { new: true }
-    )
+    ReportModel.findOneAndDelete({ _id: req.params.id })
       .then((report) => {
-        res.json({ data: report });
+        AuthModel.findOneAndUpdate(
+          {
+            _id: report.user_id,
+          },
+          {
+            $pull: { reports: { report_id: report._id } },
+          },
+          { new: true }
+        ).then((account) => {
+          res.json({ data: report });
+        });
       })
       .catch((error) => {
         res.json({ error: error });
@@ -30,54 +42,29 @@ module.exports = {
   },
 
   successReport(req, res, next) {
-    AuthModel.findOneAndUpdate(
-      {
-        _id: req.user.id,
-        "report._id": req.params.id,
-      },
-      {
-        $set: {
-          "report.$.status": 1,
-        },
-      },
-      { new: true }
-    )
+    req.body.status = 1;
+    ReportModel.findOneAndUpdate({ _id: req.params.id }, req.body, {
+      new: true,
+    })
       .then((report) => {
-        if (!report) {
-          return res.status(404).json({ error: "Không tồn tại report" });
-        }
         res.json({ data: report });
       })
-      .catch((error) => {
-        res.json({ error: error });
-      });
+      .catch((err) => res.json({ error: err }));
   },
 
-  async getAllReport(req, res, next) {
-    const data = await AuthModel.find({});
-    const reports = [];
-
-    data.forEach((user) => {
-      if (user.report && user.report.length > 0) {
-        const userReports = {
-          username: user.username,
-          reports: user.report.map((report) => ({
-            title: report.title,
-            description: report.description,
-            status: report.status,
-          })),
-        };
-        reports.push(userReports);
-      }
-    });
-
-    res.json({ data: reports });
+  getAllReport(req, res, next) {
+    ReportModel.find()
+      .then((report) => {
+        res.json({ data: report });
+      })
+      .catch((err) => res.json(err));
   },
 
   getReportInStudent(req, res, next) {
     AuthModel.findById(req.user.id)
+      .populate("reports.report_id")
       .then((user) => {
-        res.json({ data: user.report });
+        res.json({ data: user.reports });
       })
       .catch((err) => {
         res.json({ data: err });

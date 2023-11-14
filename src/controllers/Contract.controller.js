@@ -12,7 +12,7 @@ module.exports = {
   getContractStudent(req, res, next) {
     ContractModel.findOne({ student_id: req.user.id })
       .populate(["student_id", "room_id", "user_id"])
-      .then((contract) => res.json(contract))
+      .then((contract) => res.json({ data: contract }))
       .catch((err) => res.json(err));
   },
 

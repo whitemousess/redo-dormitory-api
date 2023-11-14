@@ -14,7 +14,7 @@ router.get(
 );
 router.get("/get-electric-room", verifyToken, BillEWController.getElectricRoom);
 router.get(
-  "/get-one-electric",
+  "/:id/get-electric",
   verifyTokenAndAdmin,
   BillEWController.getOneElectric
 );

@@ -11,11 +11,13 @@ const schema = new Schema(
     email: { type: String },
     phone: { type: String },
     address: { type: String },
-    report: [
+    reports: [
       {
-        title: { type: String },
-        description: { type: String },
-        status: { type: Number, default: 0 },
+        _id: false,
+        report_id: {
+          type: Schema.Types.ObjectId,
+          ref: "reports",
+        },
       },
     ],
     dob: { type: String, required: true },

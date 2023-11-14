@@ -10,12 +10,18 @@ module.exports = {
   },
 
   getRoomStudent(req, res, next) {
-    ContractModel.findOne({ student_id: req.user.id, liquidation: 0 }).then(
-      (rooms) =>
-        RoomModel.findById(rooms.room_id)
-          .then((rooms) => res.json({ data: rooms.count_student }))
-          .catch((err) => res.json({ error: err }))
-    );
+    ContractModel.findOne({ student_id: req.user.id, liquidation: 0 })
+      .then((rooms) => {
+        if (!rooms) {
+          res.json({ message: "No room yet" });
+        } else {
+          RoomModel.findById(rooms.room_id)
+            .populate("count_student.student_id")
+            .then((rooms) => res.json(rooms.count_student))
+            .catch((err) => res.json({ error: err }));
+        }
+      })
+      .catch((err) => res.json({ error: err }));
   },
 
   getRoomById(req, res, next) {

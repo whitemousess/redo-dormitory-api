@@ -11,35 +11,30 @@ const schema = new Schema(
     area: { type: Number, required: true },
     count_student: [
       {
+        _id: false,
         student_id: {
           type: Schema.Types.ObjectId,
           ref: "accounts",
-          required: true,
         },
       },
     ],
     Bill_service: [
       {
-        service_id: {
+        _id: false,
+        id: {
           type: Schema.Types.ObjectId,
-          ref: "Services",
+          ref: "billServices",
           required: true,
         },
-        phone: { type: String, required: true },
-        status: { type: Number, required: true, default: 0 },
       },
     ],
     Bill_Electric_Water: [
       {
-        e_first: { type: Number, default: 0 },
-        e_last: { type: Number, default: 0 },
-        price_per_e: { type: Number, default: 0 },
-        w_first: { type: Number, default: 0 },
-        w_last: { type: Number, default: 0 },
-        price_per_w: { type: Number, default: 0 },
-        date_start: { type: String },
-        date_end: { type: String },
-        status: { type: Number, default: 0 },
+        _id: false,
+        electric_water_id: {
+          type: Schema.Types.ObjectId,
+          ref: "BillEWs",
+        },
       },
     ],
   },

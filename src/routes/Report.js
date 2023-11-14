@@ -9,13 +9,13 @@ const ReportController = require("../controllers/Report.controller");
 // create report
 router.put("/create-report", verifyToken, ReportController.createReport);
 // delete report
-router.put(
+router.get(
   "/:id/delete-report",
   verifyTokenAndAdmin,
   ReportController.deleteReport
 );
 // success report
-router.put(
+router.get(
   "/:id/success-report",
   verifyTokenAndAdmin,
   ReportController.successReport
@@ -28,7 +28,7 @@ router.get(
 );
 router.get(
   "/get-student-report",
-  verifyTokenAndAdmin,
+  verifyToken,
   ReportController.getReportInStudent
 );
 

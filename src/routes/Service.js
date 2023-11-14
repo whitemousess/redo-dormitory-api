@@ -2,11 +2,11 @@ const express = require("express");
 const router = express.Router();
 
 const ServiceController = require("../controllers/Service.controller");
-const { verifyTokenAndAdmin } = require("../middleware/CheckLogin");
+const { verifyTokenAndAdmin,verifyToken } = require("../middleware/CheckLogin");
 
 router.get(
   "/get-all-service",
-  verifyTokenAndAdmin,
+  verifyToken,
   ServiceController.getAllService
 );
 router.get(

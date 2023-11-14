@@ -104,7 +104,7 @@ module.exports = {
             auth.password,
             process.env.ACCESS_TOKEN
           ).toString(CryptoJS.enc.Utf8);
-          
+
           if (hashedPassword !== req.body.password) {
             res.status(401).json({ message: "Invalid password" });
           } else {
@@ -147,9 +147,13 @@ module.exports = {
   },
 
   getCurrent(req, res, next) {
-    AuthModel.findById(req.user.id).then((user) => {
-      res.json({ data: user });
-    });
+    AuthModel.findById(req.user.id)
+      .then((user) => {
+        res.json({ data: user });
+      })
+      .catch(() =>
+        res.status(404).json({ message: "Username or password incorrect" })
+      );
   },
 
   getCurrentById(req, res, next) {
@@ -175,12 +179,8 @@ module.exports = {
         req.body.avatarUrl = req.file.path;
       }
 
-      if (!req.body.password) {
-        const hashedPassword = CryptoJS.AES.decrypt(
-          user.password,
-          process.env.ACCESS_TOKEN
-        ).toString(CryptoJS.enc.Utf8);
-        req.body.password = hashedPassword;
+      if (req.body.password == user.password) {
+        req.body.password = user.password;
       } else {
         const handlePassword = CryptoJS.AES.encrypt(
           req.body.password,
@@ -216,18 +216,14 @@ module.exports = {
         req.body.avatarUrl = req.file.path;
       }
 
-      if (req.body.password === user.password) {
+      if (req.body.password == user.password) {
+        req.body.password = user.password;
+      } else {
         const handlePassword = CryptoJS.AES.encrypt(
           req.body.password,
           process.env.ACCESS_TOKEN
         ).toString();
         req.body.password = handlePassword;
-      } else {
-        const hashedPassword = CryptoJS.AES.decrypt(
-          user.password,
-          process.env.ACCESS_TOKEN
-        ).toString(CryptoJS.enc.Utf8);
-        req.body.password = hashedPassword;
       }
 
       AuthModel.findByIdAndUpdate({ _id: req.params.id }, req.body)
